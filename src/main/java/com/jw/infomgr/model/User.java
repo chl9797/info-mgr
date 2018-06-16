@@ -1,10 +1,12 @@
 package com.jw.infomgr.model;
 
+import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 
 
@@ -40,11 +42,12 @@ enum Authority {
 }
 
 //personService.save(new Person("Jhon", Gender.male));
-@Entity
-@Table(indexes = {@Index(name = "USER", columnList = "name", unique = true)})
+@Data
 @EntityListeners(AuditingEntityListener.class)
-public class User {
-
+@Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "Authority", discriminatorType = DiscriminatorType.STRING)
+public class User implements Serializable {
     @Id
     @GeneratedValue
     private int id;
@@ -54,56 +57,22 @@ public class User {
 
     @Column(nullable = false)
     private String password;
-
-    @Column
-    private String student_id;  // 学号
-
-    @Column
+    private int age;
+    private String phone;
+    private String student_id;  // 学号/工号
     private String image;       // 头像路径
 
     @Column
     @Enumerated(EnumType.STRING)
-    private Gender gender;
+    private Gender gender;      // 性别
 
-    @Column
-    @Enumerated(EnumType.STRING)
-    private Authority authority;
+//    @Column
+//    @Enumerated(EnumType.STRING)
+//    private Authority authority;    // 权限
 
     @CreatedDate
     private Date createdTime;
 
     @LastModifiedDate
     private Date updateTime;
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
 }
