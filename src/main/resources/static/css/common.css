@@ -1,0 +1,15 @@
+.content {
+    word-break: break-word;
+}
+
+.main {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.fade-enter-active, .fade-leave-active {
+    transition: all 1s
+}
+.fade-enter, .fade-leave-active {
+    opacity: 0
+}
