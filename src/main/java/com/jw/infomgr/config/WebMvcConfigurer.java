@@ -1,10 +1,12 @@
 package com.jw.infomgr.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import java.util.List;
@@ -43,5 +45,13 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
     @Bean
     public AuthenticationInterceptor authenticationInterceptor() {
         return new AuthenticationInterceptor();
+    }
+
+    @Autowired
+    UploadConfig uploadConfig;
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/images/**").addResourceLocations("file:///" + uploadConfig.getUploadPath());
     }
 }

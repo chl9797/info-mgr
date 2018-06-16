@@ -295,6 +295,26 @@ var User = {
         } else {
             next()
         }
+    },
+    methods: {
+        upload: function (e) {
+            e.preventDefault();
+            console.log(e.target.files)
+            var files = e.target.files;
+            var data = new FormData();
+            data.append('image', files[0]);
+            axios.post('/api/user/uploadImage', data, {
+                headers: {
+                    token: sessionStorage.getItem('token')
+                }
+            }).then(function (res) {
+                if (res.data.error) {
+                    handleError(res.data.error)
+                } else {
+                    emitInfo('更新头像成功')
+                }
+            }.bind(this))
+        }
     }
 }
 

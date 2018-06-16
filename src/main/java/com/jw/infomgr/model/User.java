@@ -11,23 +11,6 @@ import java.io.Serializable;
 import java.util.Date;
 
 
-
-enum Authority {
-    student("学生"),
-    teacher("老师"),
-    admin("管理员");
-
-    private String name;
-
-    Authority(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-}
-
 //personService.save(new Person("Jhon", Gender.male));
 @Data
 @EntityListeners(AuditingEntityListener.class)
@@ -47,7 +30,7 @@ public class User implements Serializable {
     private int age;
     private String phone;
     private String studentID;  // 学号/工号
-    private String image;       // 头像路径
+//    private String image;       // 头像路径
 
     @Column
     @Enumerated(EnumType.STRING)

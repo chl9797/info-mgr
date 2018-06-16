@@ -3,10 +3,15 @@ package com.jw.infomgr.api;
 import com.alibaba.fastjson.JSONObject;
 import com.jw.infomgr.annotation.CurrentUser;
 import com.jw.infomgr.annotation.LoginRequired;
+import com.jw.infomgr.config.UploadConfig;
 import com.jw.infomgr.model.*;
 import com.jw.infomgr.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/user")
@@ -16,13 +21,15 @@ public class UserApi {
     private final UserRepository userRepository;
     private final StudentRepository studentRepository;
     private final TeacherRepository teacherRepository;
+    private final UploadConfig uploadConfig;
 
     @Autowired
-    public UserApi(UserService userService, UserRepository userRepository, StudentRepository studentRepository, TeacherRepository teacherRepository) {
+    public UserApi(UserService userService, UserRepository userRepository, StudentRepository studentRepository, TeacherRepository teacherRepository, UploadConfig uploadConfig) {
         this.userService = userService;
         this.userRepository = userRepository;
         this.studentRepository = studentRepository;
         this.teacherRepository = teacherRepository;
+        this.uploadConfig = uploadConfig;
     }
 
     @PostMapping("/add")
@@ -72,4 +79,23 @@ public class UserApi {
         return jsonObject;
     }
 
+    @PostMapping("/uploadImage")
+    @LoginRequired
+    public Object uploadImage(@RequestParam(value = "image") MultipartFile file, @CurrentUser User currentUser) {
+        JSONObject jsonObject = new JSONObject();
+        if (file.isEmpty()) {
+            jsonObject.put("error", "文件不能为空");
+            return jsonObject;
+        }
+        File dest = new File(uploadConfig.getUploadPath() + currentUser.getId() + ".jpg");
+        try {
+            file.transferTo(dest);
+            jsonObject.put("message", "success");
+            return jsonObject;
+        } catch (IllegalStateException | IOException e) {
+            e.printStackTrace();
+        }
+        jsonObject.put("error", "文件上传失败");
+        return jsonObject;
+    }
 }
