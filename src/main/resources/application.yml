@@ -9,6 +9,7 @@ spring:
       hibernate:
         hbm2ddl:
           auto: update
+        enable_lazy_load_no_trans: true
 logging:
   level:
     org:

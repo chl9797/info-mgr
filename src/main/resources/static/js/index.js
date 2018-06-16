@@ -197,18 +197,6 @@ var SignupForm = {
     }
 }
 
-
-marked.setOptions({
-    renderer: new marked.Renderer(),
-    gfm: true,
-    tables: true,
-    breaks: true,
-    pedantic: false,
-    sanitize: true,
-    smartLists: true,
-    smartypants: true
-});
-
 var PostDetail = {
     template: '#post-detail',
     data: function () {
@@ -387,31 +375,25 @@ var InfoMgr = {
     methods: {
         handleSubmit: function (e) {
             e.preventDefault()
-            console.log(this)
+            // console.log(this)
             axios.post('/api/user/update', {
-                id: JSON.parse(sessionStorage.getItem('currentUser')).id,
+                name: JSON.parse(sessionStorage.getItem('currentUser')).name,
                 age: this.age,
                 department: this.department,
                 major: this.major,
                 grade: this.grade,
                 classNum: this.classNum,
                 phone: this.phone,
-                gender: this.gender,
+                gender: this.gender
+            }, {
+                headers: {
+                    token: sessionStorage.getItem('token')
+                }
             }).then(function (res) {
                 if (res.data.error) {
                     handleError(res.data.error)
                 } else {
-                    sessionStorage.setItem('token', res.data.token)
-                    sessionStorage.setItem('currentUser', JSON.stringify(res.data.user));
-                    emitLogin()
-                    switch (res.data.authority) {
-                        case "Admin":
-                            this.$router.push('/admin')
-                            break;
-                        default:
-                            this.$router.push('/user')
-                            break;
-                    }
+                    emitInfo('更新信息成功')
                 }
             }.bind(this))
         }
@@ -427,11 +409,11 @@ var routes = [{
         component: defaultIndex
     },
     {
-        path: '/login',
+        path: '/login', // 登录页面
         component: LoginForm
     },
     {
-        path: '/signup',
+        path: '/signup', // 注册
         component: SignupForm
     },
     {
@@ -443,15 +425,15 @@ var routes = [{
         component: PostDetail
     },
     {
-        path: '/user', // 学生和老师
+        path: '/user', // 学生和老师主页
         component: User
     },
     {
-        path: '/admin', // 管理员
+        path: '/admin', // 管理员主页
         component: Admin
     },
     {
-        path: '/info', // 管理员
+        path: '/info', // 查看与修改个人信息
         component: InfoMgr
     },
 ]

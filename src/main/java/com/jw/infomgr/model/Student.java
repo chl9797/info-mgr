@@ -11,7 +11,7 @@ import javax.persistence.*;
 @DiscriminatorColumn(discriminatorType = DiscriminatorType.STRING)
 @DiscriminatorValue("Student")
 public class Student extends User {
-    private String address;
+//    private String address;
     private String department;  // 学院
     private String major;       // 专业
     private int grade;          // 年级

@@ -1,5 +1,6 @@
 package com.jw.infomgr.model;
 
+import com.alibaba.fastjson.JSONObject;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -10,21 +11,6 @@ import java.io.Serializable;
 import java.util.Date;
 
 
-enum Gender {
-    male("男"),
-    female("女"),
-    unknown("未知");
-
-    private String name;
-
-    Gender(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-}
 
 enum Authority {
     student("学生"),
