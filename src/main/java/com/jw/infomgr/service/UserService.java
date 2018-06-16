@@ -18,7 +18,7 @@ public class UserService {
     }
 
     public User add(User user) {
-        String passwordHash =  passwordToHash(user.getPassword());
+        String passwordHash = passwordToHash(user.getPassword());
         user.setPassword(passwordHash);
         userRepository.save(user);
         return userRepository.getOne(user.getId());

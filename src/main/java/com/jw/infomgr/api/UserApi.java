@@ -22,7 +22,7 @@ public class UserApi {
         this.userRepository = userRepository;
     }
 
-    @PostMapping("")
+    @PostMapping("/add")
     public Object add(@RequestBody User user) {
         if (userRepository.findByName(user.getName()) != null) {
             JSONObject jsonObject = new JSONObject();
@@ -32,17 +32,16 @@ public class UserApi {
         return userService.add(user);
     }
 
-    @GetMapping("")
+    @GetMapping("/info")
     @LoginRequired
     public Object findById(@CurrentUser User currentUser) {
         return userRepository.getOne(currentUser.getId());
     }
 
-    @GetMapping("/image")
-    @LoginRequired
-    public Object image(@CurrentUser User currentUser) {
-        return currentUser.getPassword();
-    }
-
+//    @GetMapping("/info")
+//    @LoginRequired
+//    public Object userInfo(@CurrentUser User currentUser) {
+//        return currentUser.getPassword();
+//    }
 
 }

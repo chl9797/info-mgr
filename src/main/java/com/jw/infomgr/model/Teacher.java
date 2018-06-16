@@ -5,7 +5,7 @@ import lombok.Data;
 import javax.persistence.*;
 
 @Entity
-@Table(indexes = {@Index(name = "Teacher", columnList = "name", unique = true)})
+@Table(indexes = {@Index(columnList = "name", unique = true)})
 @Data
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(discriminatorType = DiscriminatorType.STRING)

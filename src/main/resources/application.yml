@@ -8,7 +8,7 @@ spring:
     properties:
       hibernate:
         hbm2ddl:
-          auto: create
+          auto: update
 logging:
   level:
     org:

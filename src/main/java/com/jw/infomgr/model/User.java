@@ -12,7 +12,8 @@ import java.util.Date;
 
 enum Gender {
     male("男"),
-    female("女");
+    female("女"),
+    unknown("未知");
 
     private String name;
 
@@ -59,7 +60,7 @@ public class User implements Serializable {
     private String password;
     private int age;
     private String phone;
-    private String student_id;  // 学号/工号
+    private String studentID;  // 学号/工号
     private String image;       // 头像路径
 
     @Column

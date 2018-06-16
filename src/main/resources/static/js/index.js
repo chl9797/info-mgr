@@ -144,7 +144,14 @@ var LoginForm = {
                     sessionStorage.setItem('token', res.data.token)
                     sessionStorage.setItem('currentUser', JSON.stringify(res.data.user));
                     emitLogin()
-                    this.$router.push('/')
+                    switch (res.data.authority) {
+                        case "Admin":
+                            this.$router.push('/admin')
+                            break;
+                        default:
+                            this.$router.push('/user')
+                            break;
+                    }
                 }
             }.bind(this))
         }
@@ -175,7 +182,7 @@ var SignupForm = {
                 handleError('两次输入的密码不一致')
                 return false
             }
-            axios.post('/api/user', {
+            axios.post('/api/user/add', {
                 name: this.name,
                 password: this.password
             }).then(function (res) {
@@ -279,8 +286,32 @@ var NewPost = {
     }
 }
 
-var Student = {
-    template: '#student',
+var User = {
+    template: '#user',
+    data: function () {
+        currentUser = JSON.parse(sessionStorage.getItem('currentUser'))
+        return {
+            image: currentUser.id + '.jpg',
+            currentUser: currentUser
+        }
+    },
+    // computed: {
+    //     image: () => JSON.parse(sessionStorage.getItem('currentUser')).id + '.jpg'
+    // },
+    beforeRouteEnter: function (to, from, next) {
+        if (sessionStorage.getItem('token') === null) {
+            next({
+                path: 'login'
+            })
+            emitInfo('请先登录')
+        } else {
+            next()
+        }
+    }
+}
+
+var Admin = {
+    template: '#admin',
     data: function () {
         return {
             image: JSON.parse(sessionStorage.getItem('currentUser')).id + '.jpg'
@@ -327,11 +358,74 @@ var Student = {
     }
 }
 
+var InfoMgr = {
+    template: '#info',
+    data: function () {
+        currentUser = JSON.parse(sessionStorage.getItem('currentUser'))
+        return {
+            image: currentUser.id + '.jpg',
+            age: currentUser.age,
+            department: currentUser.department,
+            major: currentUser.major,
+            grade: currentUser.grade,
+            classNum: currentUser.classNum,
+            phone: currentUser.phone,
+            gender: currentUser.gender,
+            currentUser: currentUser
+        }
+    },
+    beforeRouteEnter: function (to, from, next) {
+        if (sessionStorage.getItem('token') === null) {
+            next({
+                path: 'login'
+            })
+            emitInfo('请先登录')
+        } else {
+            next()
+        }
+    },
+    methods: {
+        handleSubmit: function (e) {
+            e.preventDefault()
+            console.log(this)
+            axios.post('/api/user/update', {
+                id: JSON.parse(sessionStorage.getItem('currentUser')).id,
+                age: this.age,
+                department: this.department,
+                major: this.major,
+                grade: this.grade,
+                classNum: this.classNum,
+                phone: this.phone,
+                gender: this.gender,
+            }).then(function (res) {
+                if (res.data.error) {
+                    handleError(res.data.error)
+                } else {
+                    sessionStorage.setItem('token', res.data.token)
+                    sessionStorage.setItem('currentUser', JSON.stringify(res.data.user));
+                    emitLogin()
+                    switch (res.data.authority) {
+                        case "Admin":
+                            this.$router.push('/admin')
+                            break;
+                        default:
+                            this.$router.push('/user')
+                            break;
+                    }
+                }
+            }.bind(this))
+        }
+    }
+}
+
+var defaultIndex = {
+    template: '#index',
+}
+
 var routes = [{
         path: '/',
-        component: PostList
+        component: defaultIndex
     },
-    // {path: '/posts', component: PostList},
     {
         path: '/login',
         component: LoginForm
@@ -349,8 +443,16 @@ var routes = [{
         component: PostDetail
     },
     {
-        path: '/student',
-        component: Student
+        path: '/user', // 学生和老师
+        component: User
+    },
+    {
+        path: '/admin', // 管理员
+        component: Admin
+    },
+    {
+        path: '/info', // 管理员
+        component: InfoMgr
     },
 ]
 
