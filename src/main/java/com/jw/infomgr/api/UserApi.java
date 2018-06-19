@@ -45,7 +45,14 @@ public class UserApi {
     @GetMapping("/info")
     @LoginRequired
     public Object findById(@CurrentUser User currentUser) {
-        return userRepository.getOne(currentUser.getId());
+        return userRepository.getFullOne(currentUser.getId());
+//        if (userInDB.getClass().equals(Student.class)) {
+//            return (Student) userInDB;
+//        } else if (userInDB.getClass().equals(Teacher.class)) {
+//            return (Teacher) userInDB;
+//        } else {
+//            return (Admin) userInDB;
+//        }
     }
 
     @PostMapping("/update")

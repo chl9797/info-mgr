@@ -10,6 +10,8 @@ import java.security.NoSuchAlgorithmException;
 
 @Service
 public class UserService {
+    private static final String salt = "kira's secret";
+
     private final UserRepository userRepository;
 
     @Autowired
@@ -21,13 +23,12 @@ public class UserService {
         String passwordHash = passwordToHash(user.getPassword());
         user.setPassword(passwordHash);
         userRepository.save(user);
-        return userRepository.getOne(user.getId());
+        return userRepository.getFullOne(user.getId());
     }
 
     private String passwordToHash(String password) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            String salt = "kira's secret";
             digest.update((password + salt).getBytes());
             byte[] src = digest.digest();
             StringBuilder stringBuilder = new StringBuilder();

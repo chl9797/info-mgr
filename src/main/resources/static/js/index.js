@@ -142,7 +142,7 @@ var LoginForm = {
                     handleError(res.data.error)
                 } else {
                     sessionStorage.setItem('token', res.data.token)
-                    sessionStorage.setItem('currentUser', JSON.stringify(res.data.user));
+                    sessionStorage.setItem('currentUser', JSON.stringify(res.data.user))
                     emitLogin()
                     switch (res.data.authority) {
                         case "Admin":
@@ -382,6 +382,36 @@ var InfoMgr = {
             currentUser: currentUser
         }
     },
+    // computed: function () {
+    //     currentUser = JSON.parse(sessionStorage.getItem('currentUser'))
+    //     return {
+    //         image: currentUser.id + '.jpg',
+    //         age: currentUser.age,
+    //         department: currentUser.department,
+    //         major: currentUser.major,
+    //         grade: currentUser.grade,
+    //         classNum: currentUser.classNum,
+    //         phone: currentUser.phone,
+    //         gender: currentUser.gender,
+    //         currentUser: currentUser
+    //     }
+    // },
+    mounted: function () {
+        // console.log("mounted enter")
+        axios.get('/api/user/info', {
+            headers: {
+                token: sessionStorage.getItem('token')
+            }
+        }).then(function (res) {
+            if (res.data.error) {
+                handleError(res.data.error)
+            } else {
+                // console.log(res.data)
+                this.currentUser = res.data
+                sessionStorage.setItem('currentUser', JSON.stringify(res.data));
+            }
+        }.bind(this))
+    },
     beforeRouteEnter: function (to, from, next) {
         if (sessionStorage.getItem('token') === null) {
             next({
@@ -414,6 +444,15 @@ var InfoMgr = {
                     handleError(res.data.error)
                 } else {
                     emitInfo('更新信息成功')
+                    currentUser = JSON.parse(sessionStorage.getItem('currentUser'))
+                    currentUser.age = this.age
+                    currentUser.department = this.department
+                    currentUser.major = this.major
+                    currentUser.grade = this.grade
+                    currentUser.classNum = this.classNum
+                    currentUser.phone = this.phone
+                    currentUser.gender = this.gender
+                    sessionStorage.setItem('currentUser', JSON.stringify(currentUser))
                 }
             }.bind(this))
         }

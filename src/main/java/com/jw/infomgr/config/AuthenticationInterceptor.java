@@ -50,7 +50,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
             if (!userRepository.existsById(userId)) {
                 throw new RuntimeException("用户不存在，请重新登录");
             }
-            User user = userRepository.getOne(userId);
+            User user = userRepository.getFullOne(userId);
             // 验证 token
             try {
                 JWTVerifier verifier = JWT.require(Algorithm.HMAC256(user.getPassword())).build();
