@@ -67,12 +67,14 @@ var Header = {
     template: '#header',
     data: function () {
         return {
-            currentUser: JSON.parse(sessionStorage.getItem('currentUser'))
+            currentUser: JSON.parse(sessionStorage.getItem('currentUser')),
+            to: '/'
         }
     },
     mounted: function () {
         onLogin(function () {
             this.currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+            this.to = sessionStorage.getItem('authority')
         }.bind(this))
     },
     methods: {
@@ -80,6 +82,7 @@ var Header = {
             this.currentUser = null
             sessionStorage.removeItem('token')
             sessionStorage.removeItem('currentUser')
+            sessionStorage.removeItem('authority')
             this.$router.push('/')
         }
     }
@@ -143,12 +146,17 @@ var LoginForm = {
                 } else {
                     sessionStorage.setItem('token', res.data.token)
                     sessionStorage.setItem('currentUser', JSON.stringify(res.data.user))
-                    emitLogin()
                     switch (res.data.authority) {
                         case "Admin":
+                            console.log('admin login')
+                            sessionStorage.setItem('authority', "/admin")
+                            emitLogin()
                             this.$router.push('/admin')
                             break;
                         default:
+                            console.log('normal user login')
+                            sessionStorage.setItem('authority', "/user")
+                            emitLogin()
                             this.$router.push('/user')
                             break;
                     }
@@ -192,83 +200,6 @@ var SignupForm = {
                     emitInfo('注册成功，请登录')
                     this.$router.push('/login')
                 }
-            }.bind(this))
-        }
-    }
-}
-
-var PostDetail = {
-    template: '#post-detail',
-    data: function () {
-        return {
-            post: {
-                content: '',
-                author: {}
-            }
-        }
-    },
-    mounted: function () {
-        axios.get('/api/post/' + this.$route.params.id).then(function (res) {
-            if (res.data.error) {
-                handleError(res.data.error)
-                return
-            } else {
-                this.post = res.data
-            }
-        }.bind(this))
-    },
-    filters: {
-        longToDate: PostList.filters.longToDate
-    },
-    computed: {
-        compiledMarkdown: function () {
-            return marked(this.post.content)
-        }
-    }
-}
-
-var NewPost = {
-    template: '#new-post',
-    data: function () {
-        return {
-            title: null,
-            content: null
-        }
-
-    },
-    beforeRouteEnter: function (to, from, next) {
-        if (sessionStorage.getItem('token') === null) {
-            next({
-                path: 'login'
-            })
-            emitInfo('请先登录')
-        } else {
-            next()
-        }
-    },
-    methods: {
-        handleSubmit: function (e) {
-            if (this.title === null || this.title === '') {
-                handleError('标题不能为空')
-                return false
-            }
-            if (this.content === null || this.content === '') {
-                handleError('内容不能为空')
-                return false
-            }
-            axios.post('/api/post', {
-                title: this.title,
-                content: this.content,
-            }, {
-                headers: {
-                    token: sessionStorage.getItem('token')
-                }
-            }).then(function (res) {
-                if (res.data.error) {
-                    handleError(res.data.error)
-                    return
-                }
-                this.$router.push('/posts/' + res.data.id)
             }.bind(this))
         }
     }
@@ -322,8 +253,24 @@ var Admin = {
     template: '#admin',
     data: function () {
         return {
-            image: JSON.parse(sessionStorage.getItem('currentUser')).id + '.jpg'
+            infoAll: [],
+            authorities: []
         }
+    },
+    mounted: function () {
+        axios.get('/api/admin/infoall', {
+            headers: {
+                token: sessionStorage.getItem('token')
+            }
+        }).then(function (res) {
+            if (res.data.error) {
+                handleError(res.data.error)
+            } else {
+                // console.log(res.data)
+                this.infoAll = res.data.users
+                this.authorities = res.data.authorities
+            }
+        }.bind(this))
     },
     // computed: {
     //     image: () => JSON.parse(sessionStorage.getItem('currentUser')).id + '.jpg'
@@ -337,20 +284,75 @@ var Admin = {
         } else {
             next()
         }
+    }
+}
+
+var AdminInfoMgr = {
+    template: '#admin-info-mgr',
+    data: function () {
+        editUser = JSON.parse(sessionStorage.getItem('editUser'))
+        return {
+            editUser: editUser ? editUser : {
+                name: '',
+                studentID: ''
+            },
+            image: 'null.jpg',
+            age: 0,
+            department: '',
+            major: '',
+            grade: '',
+            classNum: '',
+            phone: '',
+            gender: '',
+        }
+    },
+    mounted: function () {
+        // console.log("mounted enter")
+        axios.get('/api/admin/info/' + this.$route.params.id, {
+            headers: {
+                token: sessionStorage.getItem('token')
+            }
+        }).then(function (res) {
+            if (res.data.error) {
+                handleError(res.data.error)
+            } else {
+                console.log(res.data)
+                this.editUser = res.data
+                this.image = this.editUser.id + '.jpg'
+                this.age = this.editUser.age
+                this.department = this.editUser.department
+                this.major = this.editUser.major
+                this.grade = this.editUser.grade
+                this.classNum = this.editUser.classNum
+                this.phone = this.editUser.phone
+                this.gender = this.editUser.gender
+                sessionStorage.setItem('editUser', JSON.stringify(res.data));
+            }
+        }.bind(this))
+    },
+    beforeRouteEnter: function (to, from, next) {
+        if (sessionStorage.getItem('token') === null) {
+            next({
+                path: 'login'
+            })
+            emitInfo('请先登录')
+        } else {
+            next()
+        }
     },
     methods: {
         handleSubmit: function (e) {
-            if (this.title === null || this.title === '') {
-                handleError('标题不能为空')
-                return false
-            }
-            if (this.content === null || this.content === '') {
-                handleError('内容不能为空')
-                return false
-            }
-            axios.post('/api/post', {
-                title: this.title,
-                content: this.content,
+            e.preventDefault()
+            // console.log(this)
+            axios.post('/api/admin/update/' + this.$route.params.id, {
+                name: JSON.parse(sessionStorage.getItem('editUser')).name,
+                age: this.age,
+                department: this.department,
+                major: this.major,
+                grade: this.grade,
+                classNum: this.classNum,
+                phone: this.phone,
+                gender: this.gender
             }, {
                 headers: {
                     token: sessionStorage.getItem('token')
@@ -358,9 +360,18 @@ var Admin = {
             }).then(function (res) {
                 if (res.data.error) {
                     handleError(res.data.error)
-                    return
+                } else {
+                    emitInfo('更新信息成功')
+                    editUser = JSON.parse(sessionStorage.getItem('editUser'))
+                    editUser.age = this.age
+                    editUser.department = this.department
+                    editUser.major = this.major
+                    editUser.grade = this.grade
+                    editUser.classNum = this.classNum
+                    editUser.phone = this.phone
+                    editUser.gender = this.gender
+                    sessionStorage.setItem('editUser', JSON.stringify(editUser))
                 }
-                this.$router.push('/posts/' + res.data.id)
             }.bind(this))
         }
     }
@@ -382,20 +393,6 @@ var InfoMgr = {
             currentUser: currentUser
         }
     },
-    // computed: function () {
-    //     currentUser = JSON.parse(sessionStorage.getItem('currentUser'))
-    //     return {
-    //         image: currentUser.id + '.jpg',
-    //         age: currentUser.age,
-    //         department: currentUser.department,
-    //         major: currentUser.major,
-    //         grade: currentUser.grade,
-    //         classNum: currentUser.classNum,
-    //         phone: currentUser.phone,
-    //         gender: currentUser.gender,
-    //         currentUser: currentUser
-    //     }
-    // },
     mounted: function () {
         // console.log("mounted enter")
         axios.get('/api/user/info', {
@@ -476,20 +473,16 @@ var routes = [{
         component: SignupForm
     },
     {
-        path: '/posts/new',
-        component: NewPost
-    },
-    {
-        path: '/posts/:id',
-        component: PostDetail
-    },
-    {
         path: '/user', // 学生和老师主页
         component: User
     },
     {
         path: '/admin', // 管理员主页
         component: Admin
+    },
+    {
+        path: '/admin/info/:id',
+        component: AdminInfoMgr
     },
     {
         path: '/info', // 查看与修改个人信息

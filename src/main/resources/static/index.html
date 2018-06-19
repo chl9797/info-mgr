@@ -49,13 +49,9 @@
                     </router-link>
                 </div>
                 <div class="navbar-end" v-else>
-                    <router-link class="navbar-item" to="/user">
+                    <router-link class="navbar-item" :to="to">
                         <button class="button">{{ currentUser.name }}</button>
                     </router-link>
-                    <!-- <a class="navbar-item">
-                        <span class="navbar-item">{{ currentUser.name }}</span>
-                    </a> -->
-                    <!-- <span class="navbar-item"></span> -->
                     <a class="navbar-item">
                         <button class="button is-primary" @click="logout">退出</button>
                     </a>
@@ -118,50 +114,133 @@
     </script>
 
     <script id="admin" type="text/x-template">
-        <div class="tile is-ancestor">
-            <div class="tile">
-                <div class="tile is-parent is-vertical" align="center">
-                    <article class="tile is-child notification is-primary">
-                        <p class="title">个人信息</p>
-                        <!-- <p class="subtitle">查看/修改</p> -->
-                        <router-link style="text-decoration: none" to="/info">
+        <table class="table has-text-centered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>姓名</th>
+                    <th>性别</th>
+                    <th>年龄</th>
+                    <th>学号</th>
+                    <th>权限</th>
+                    <th>查看详情</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(infoOne, index) in infoAll">
+                    <!-- <a href="#"> -->
+                    <th>{{ infoOne.id }}</th>
+                    <td>{{ infoOne.name }}</td>
+                    <td>{{ infoOne.gender }}</td>
+                    <td>{{ infoOne.age }}</td>
+                    <td>{{ infoOne.studentID }}</td>
+                    <td>{{ authorities[index] }}</td>
+                    <td>
+                        <router-link style="text-decoration: none" :to="'/admin/info/' + infoOne.id">
                             <button class="button is-danger is-outlined">查看/修改</button>
                         </router-link>
-                    </article>
-                    <article class="tile is-child notification is-warning">
-                        <p class="title">查看课程</p>
-                        <router-link style="text-decoration: none" to="/course">
-                            <button class="button is-danger is-outlined">点击查看</button>
-                        </router-link>
-                    </article>
+                    </td>
+                    <!-- </a> -->
+                </tr>
+            </tbody>
+        </table>
+    </script>
+
+    <script id="admin-info-mgr" type="text/x-template">
+        <!-- 姓名 年龄 手机 学号 性别 学院 专业 年级 班级 -->
+        <div class="card">
+            <div class="card-content">
+                <div class="media">
+                    <div class="media-left">
+                        <figure class="image is-128x128">
+                            <img :src="'images/' + image">
+                        </figure>
+                    </div>
+                    <div class="media-content">
+                        <p class="title is-4">{{ editUser.name }}</p>
+                        <p class="subtitle is-6">@{{ editUser.studentID }}</p>
+                    </div>
                 </div>
-                <div class="tile is-parent">
-                    <article class="tile is-child notification is-info">
-                        <div align="center">
-                            <p class="title">Hello, {{ currentUser.name }}</p>
-                            <!-- <p class="subtitle">With an image</p> -->
-                            <figure class="image is-128x128">
-                                <img :src="'images/' + image">
-                            </figure>
+                <form @submit="handleSubmit">
+                    <div class="field">
+                        <label class="label">年龄</label>
+                        <div class="control">
+                            <input class="input is-success" type="text" v-model="age" id="age">
                         </div>
-                        <br>
-                        <div class="field">
-                            <div class="file is-centered is-small is-boxed is-danger">
-                                <label class="file-label">
-                                    <input class="file-input" type="file" name="image">
-                                    <span class="file-cta">
-                                        <span class="file-icon">
-                                            <i class="fas fa-upload"></i>
-                                        </span>
-                                        <span class="file-label">
-                                            修改头像
-                                        </span>
-                                    </span>
-                                </label>
+                    </div>
+
+                    <div class="field">
+                        <label class="label">学院</label>
+                        <div class="control">
+                            <input class="input is-success" type="text" id="department" v-model="department">
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label class="label">专业</label>
+                        <div class="control">
+                            <input class="input is-success" type="text" id="major" v-model="major">
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label class="label">年级</label>
+                        <div class="control">
+                            <div class="select is-success">
+                                <select v-model="grade" id="grade">
+                                    <option>2010</option>
+                                    <option>2011</option>
+                                    <option>2012</option>
+                                    <option>2013</option>
+                                    <option>2014</option>
+                                    <option>2015</option>
+                                    <option>2016</option>
+                                    <option>2017</option>
+                                </select>
                             </div>
                         </div>
-                    </article>
-                </div>
+                        <!-- <p class="help is-success">当前：{{ grade }}</p> -->
+                    </div>
+
+                    <div class="field">
+                        <label class="label">班级</label>
+                        <div class="control">
+                            <input v-model="classNum" id="classNum" class="input is-success" type="text" v-bind:value="classNum">
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label class="label">手机</label>
+                        <div class="control has-icons-left has-icons-right">
+                            <input v-model="phone" id="phone" class="input is-success" type="text" v-bind:value="phone">
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-phone"></i>
+                            </span>
+                            <span class="icon is-small is-right">
+                                <i class="fas fa-check"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label class="label">性别</label>
+                        <div class="control">
+                            <div class="select is-success">
+                                <select v-model="gender" id="gender">
+                                    <option>male</option>
+                                    <option>female</option>
+                                    <option>unknown</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field is-grouped">
+                        <div class="control">
+                            <button class="button is-link">提交修改</button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </script>
@@ -261,7 +340,6 @@
                                 </select>
                             </div>
                         </div>
-                        <!-- <p class="help is-success">当前：{{ gender }}</p> -->
                     </div>
 
                     <div class="field is-grouped">

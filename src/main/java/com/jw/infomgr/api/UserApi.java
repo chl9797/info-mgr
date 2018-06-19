@@ -13,22 +13,19 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 
+// 供普通学生和教师的api
 @RestController
 @RequestMapping("/api/user")
 public class UserApi {
     private UserService userService;
 
     private final UserRepository userRepository;
-    private final StudentRepository studentRepository;
-    private final TeacherRepository teacherRepository;
     private final UploadConfig uploadConfig;
 
     @Autowired
-    public UserApi(UserService userService, UserRepository userRepository, StudentRepository studentRepository, TeacherRepository teacherRepository, UploadConfig uploadConfig) {
+    public UserApi(UserService userService, UserRepository userRepository, UploadConfig uploadConfig) {
         this.userService = userService;
         this.userRepository = userRepository;
-        this.studentRepository = studentRepository;
-        this.teacherRepository = teacherRepository;
         this.uploadConfig = uploadConfig;
     }
 
@@ -42,52 +39,21 @@ public class UserApi {
         return userService.add(user);
     }
 
-    @GetMapping("/info")
     @LoginRequired
+    @GetMapping("/info")
     public Object findById(@CurrentUser User currentUser) {
         return userRepository.getFullOne(currentUser.getId());
-//        if (userInDB.getClass().equals(Student.class)) {
-//            return (Student) userInDB;
-//        } else if (userInDB.getClass().equals(Teacher.class)) {
-//            return (Teacher) userInDB;
-//        } else {
-//            return (Admin) userInDB;
-//        }
     }
 
-    @PostMapping("/update")
     @LoginRequired
+    @PostMapping("/update")
     public Object userInfo(@RequestBody JSONObject request) {
         User userInDB = userRepository.findByName(request.getString("name"));
-        JSONObject jsonObject = new JSONObject();
-        if (userInDB == null) {
-            jsonObject.put("error", "用户不存在");
-        } else {
-            userInDB.setAge(request.getInteger("age"));
-            userInDB.setGender(Gender.valueOf(request.getString("gender")));
-            userInDB.setPhone(request.getString("phone"));
-            if (userInDB.getClass().equals(Student.class)) {
-                Student student = (Student) userInDB;
-                student.setClassNum(request.getInteger("classNum"));
-                student.setDepartment(request.getString("department"));
-                student.setGrade(request.getInteger("grade"));
-                student.setMajor(request.getString("major"));
-                studentRepository.save(student);
-            } else if (userInDB.getClass().equals(Teacher.class)) {
-                Teacher teacher = (Teacher) userInDB;
-                teacher.setDepartment(request.getString("department"));
-                teacher.setTitle(request.getString("title"));
-                teacherRepository.save(teacher);
-            } else {
-                userRepository.save(userInDB);
-            }
-            jsonObject.put("message", "success");
-        }
-        return jsonObject;
+        return userService.update(userInDB, request);
     }
 
-    @PostMapping("/uploadImage")
     @LoginRequired
+    @PostMapping("/uploadImage")
     public Object uploadImage(@RequestParam(value = "image") MultipartFile file, @CurrentUser User currentUser) {
         JSONObject jsonObject = new JSONObject();
         if (file.isEmpty()) {
