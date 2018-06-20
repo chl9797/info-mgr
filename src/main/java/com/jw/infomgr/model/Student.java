@@ -16,4 +16,11 @@ public class Student extends User {
     private String major;       // 专业
     private int grade;          // 年级
     private int classNum;       // 班级
+
+    public Student() {
+    }
+
+    public Student(User user) {
+        super(user);
+    }
 }

@@ -31,6 +31,32 @@ public class UserService {
         return userRepository.getFullOne(user.getId());
     }
 
+    public void add(JSONObject jsonObject) {
+        User user = new User();
+        user.setName(jsonObject.getString("name"));
+        user.setPassword(passwordToHash(jsonObject.getString("password")));
+        user.setAge(jsonObject.getInteger("age"));
+        user.setGender(Gender.valueOf(jsonObject.getString("gender")));
+        user.setPhone(jsonObject.getString("phone"));
+//        userRepository.save(user);
+        if (jsonObject.getString("studentID") != null) {
+            Student student = new Student(user);
+            student.setStudentID(jsonObject.getString("studentID"));
+            student.setClassNum(jsonObject.getInteger("classNum"));
+            student.setDepartment(jsonObject.getString("department"));
+            student.setGrade(jsonObject.getInteger("grade"));
+            student.setMajor(jsonObject.getString("major"));
+            studentRepository.save(student);
+        } else if (jsonObject.getString("title") != null) {
+            Teacher teacher = (Teacher) user;
+            teacher.setDepartment(jsonObject.getString("department"));
+            teacher.setTitle(jsonObject.getString("title"));
+            teacherRepository.save(teacher);
+        } else {
+            userRepository.save(user);
+        }
+    }
+
     private String passwordToHash(String password) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -79,6 +105,10 @@ public class UserService {
                 teacherRepository.save(teacher);
             } else {
                 userRepository.save(user);
+            }
+            String authority = request.getString("authority");
+            if (authority != null) {
+                userRepository.updateAuthorityById(authority, user.getId());
             }
             jsonObject.put("message", "success");
         }

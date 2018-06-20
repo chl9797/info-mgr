@@ -45,4 +45,16 @@ public class User implements Serializable {
 
     @LastModifiedDate
     private Date updateTime;
+
+    public User() {
+    }
+
+    public User(User user) {
+        this.name = user.name;
+        this.password = user.password;
+        this.age = user.age;
+        this.phone = user.phone;
+        this.studentID = user.studentID;
+        this.gender = user.gender;
+    }
 }

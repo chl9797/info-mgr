@@ -124,11 +124,11 @@
                     <th>学号</th>
                     <th>权限</th>
                     <th>查看详情</th>
+                    <th>删除</th>
                 </tr>
             </thead>
             <tbody>
                 <tr v-for="(infoOne, index) in infoAll">
-                    <!-- <a href="#"> -->
                     <th>{{ infoOne.id }}</th>
                     <td>{{ infoOne.name }}</td>
                     <td>{{ infoOne.gender }}</td>
@@ -137,13 +137,44 @@
                     <td>{{ authorities[index] }}</td>
                     <td>
                         <router-link style="text-decoration: none" :to="'/admin/info/' + infoOne.id">
-                            <button class="button is-danger is-outlined">查看/修改</button>
+                            <button class="button is-info is-outlined">查看/修改</button>
                         </router-link>
                     </td>
-                    <!-- </a> -->
+                    <td>
+                        <router-link style="text-decoration: none" :to="'/admin/delete/' + infoOne.id">
+                            <button class="button is-danger is-outlined">删除</button>
+                        </router-link>
+                    </td>
+                </tr>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th>
+                        <div class="field">
+                            <div class="file is-centered is-small is-success">
+                                <label class="file-label">
+                                    <input ref="files" class="file-input" type="file" name="userInfo" v-on:change="upload">
+                                    <span class="file-cta">
+                                        <span class="file-icon">
+                                            <i class="fas fa-upload"></i>
+                                        </span>
+                                        <span class="file-label">
+                                            添加用户
+                                        </span>
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+                    </th>
                 </tr>
             </tbody>
         </table>
+    </script>
+
+    <script id="admin-delete" type="text/x-template">
+        <p>deleting...</p>
     </script>
 
     <script id="admin-info-mgr" type="text/x-template">
@@ -230,6 +261,19 @@
                                     <option>male</option>
                                     <option>female</option>
                                     <option>unknown</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label class="label">权限</label>
+                        <div class="control">
+                            <div class="select is-success">
+                                <select v-model="authority" id="authority">
+                                    <option>Student</option>
+                                    <option>Teacher</option>
+                                    <option>Admin</option>
                                 </select>
                             </div>
                         </div>

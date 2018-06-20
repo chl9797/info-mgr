@@ -13,4 +13,11 @@ import javax.persistence.*;
 public class Teacher extends User {
     private String department;  // 学院
     private String title;       // 职称
+
+    public Teacher() {
+    }
+
+    public Teacher(User user) {
+        super(user);
+    }
 }

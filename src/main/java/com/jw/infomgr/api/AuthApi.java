@@ -36,7 +36,7 @@ public class AuthApi {
             jsonObject.put("error", "密码不正确");
         } else {
             String token = authService.getToken(userInDB);
-            String authority = userRepository.findAuthority(userInDB.getId());
+            String authority = userRepository.findAuthorityById(userInDB.getId());
             jsonObject.put("token", token);
             jsonObject.put("user", userInDB);
             jsonObject.put("authority", authority); // 用户类型，用于前端的显示

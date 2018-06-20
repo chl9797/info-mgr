@@ -42,14 +42,14 @@ var Alert = {
     },
     mounted: function () {
         onError(function (errorMessage) {
-            this.classObject['is-danger'] = true;
+            this.classObject['is-danger'] = true
             this.message = errorMessage
             this.visible = true
             setTimeout(this.reset.bind(this), 2000)
         }.bind(this))
 
         onInfo(function (message) {
-            this.classObject['is-info'] = true;
+            this.classObject['is-info'] = true
             this.message = message
             this.visible = true
             setTimeout(this.reset.bind(this), 2000)
@@ -71,9 +71,12 @@ var Header = {
             to: '/'
         }
     },
+    computed: {
+        to: () => sessionStorage.getItem('authority')
+    },
     mounted: function () {
         onLogin(function () {
-            this.currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+            this.currentUser = JSON.parse(sessionStorage.getItem('currentUser'))
             this.to = sessionStorage.getItem('authority')
         }.bind(this))
     },
@@ -152,13 +155,13 @@ var LoginForm = {
                             sessionStorage.setItem('authority', "/admin")
                             emitLogin()
                             this.$router.push('/admin')
-                            break;
+                            break
                         default:
                             console.log('normal user login')
                             sessionStorage.setItem('authority', "/user")
                             emitLogin()
                             this.$router.push('/user')
-                            break;
+                            break
                     }
                 }
             }.bind(this))
@@ -229,11 +232,11 @@ var User = {
     },
     methods: {
         upload: function (e) {
-            e.preventDefault();
+            e.preventDefault()
             console.log(e.target.files)
-            var files = e.target.files;
-            var data = new FormData();
-            data.append('image', files[0]);
+            var files = e.target.files
+            var data = new FormData()
+            data.append('image', files[0])
             axios.post('/api/user/uploadImage', data, {
                 headers: {
                     token: sessionStorage.getItem('token')
@@ -284,6 +287,27 @@ var Admin = {
         } else {
             next()
         }
+    },
+    methods: {
+        upload: function (e) {
+            e.preventDefault()
+            console.log(e.target.files)
+            var files = e.target.files
+            var data = new FormData()
+            data.append('userInfo', files[0])
+            axios.post('/api/admin/add', data, {
+                headers: {
+                    token: sessionStorage.getItem('token')
+                }
+            }).then(function (res) {
+                if (res.data.error) {
+                    handleError(res.data.error)
+                } else {
+                    this.$router.go(0)
+                    emitInfo('添加用户成功')
+                }
+            }.bind(this))
+        }
     }
 }
 
@@ -304,6 +328,7 @@ var AdminInfoMgr = {
             classNum: '',
             phone: '',
             gender: '',
+            authority: 'Student'
         }
     },
     mounted: function () {
@@ -317,7 +342,7 @@ var AdminInfoMgr = {
                 handleError(res.data.error)
             } else {
                 console.log(res.data)
-                this.editUser = res.data
+                this.editUser = res.data.user
                 this.image = this.editUser.id + '.jpg'
                 this.age = this.editUser.age
                 this.department = this.editUser.department
@@ -326,7 +351,8 @@ var AdminInfoMgr = {
                 this.classNum = this.editUser.classNum
                 this.phone = this.editUser.phone
                 this.gender = this.editUser.gender
-                sessionStorage.setItem('editUser', JSON.stringify(res.data));
+                this.authority = res.data.authority
+                sessionStorage.setItem('editUser', JSON.stringify(res.data))
             }
         }.bind(this))
     },
@@ -352,7 +378,8 @@ var AdminInfoMgr = {
                 grade: this.grade,
                 classNum: this.classNum,
                 phone: this.phone,
-                gender: this.gender
+                gender: this.gender,
+                authority: this.authority
             }, {
                 headers: {
                     token: sessionStorage.getItem('token')
@@ -373,6 +400,35 @@ var AdminInfoMgr = {
                     sessionStorage.setItem('editUser', JSON.stringify(editUser))
                 }
             }.bind(this))
+        }
+    }
+}
+
+var AdminDelete = {
+    template: '#admin-delete',
+    created: function () {
+        console.log("created enter")
+        axios.get('/api/admin/delete/' + this.$route.params.id, {
+            headers: {
+                token: sessionStorage.getItem('token')
+            }
+        }).then(function (res) {
+            if (res.data.error) {
+                handleError(res.data.error)
+            } else {
+                emitInfo('删除成功')
+                this.$router.push('/admin')
+            }
+        }.bind(this))
+    },
+    beforeRouteEnter: function (to, from, next) {
+        if (sessionStorage.getItem('token') === null) {
+            next({
+                path: 'login'
+            })
+            emitInfo('请先登录')
+        } else {
+            next()
         }
     }
 }
@@ -405,7 +461,7 @@ var InfoMgr = {
             } else {
                 // console.log(res.data)
                 this.currentUser = res.data
-                sessionStorage.setItem('currentUser', JSON.stringify(res.data));
+                sessionStorage.setItem('currentUser', JSON.stringify(res.data))
             }
         }.bind(this))
     },
@@ -483,6 +539,10 @@ var routes = [{
     {
         path: '/admin/info/:id',
         component: AdminInfoMgr
+    },
+    {
+        path: '/admin/delete/:id',
+        component: AdminDelete
     },
     {
         path: '/info', // 查看与修改个人信息

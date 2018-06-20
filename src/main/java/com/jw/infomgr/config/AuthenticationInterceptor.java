@@ -65,7 +65,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
             }
             request.setAttribute("currentUser", user);
             if (adminMethodAnnotation != null) {
-                if (!userRepository.findAuthority(userId).equals("Admin")) {
+                if (!userRepository.findAuthorityById(userId).equals("Admin")) {
                     throw new RuntimeException("需要Admin权限！");
                 }
             }
