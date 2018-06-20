@@ -27,7 +27,7 @@ public class User implements Serializable {
 
     @Column(nullable = false)
     private String password;
-    private int age;
+    private Integer age;
     private String phone;
     private String studentID;   // 学号/工号
 //    private String image;       // 头像路径

@@ -28,7 +28,7 @@ public class UserService {
         String passwordHash = passwordToHash(user.getPassword());
         user.setPassword(passwordHash);
         userRepository.save(user);
-        return userRepository.getFullOne(user.getId());
+        return userRepository.getFullOneById(user.getId());
     }
 
     public void add(JSONObject jsonObject) {

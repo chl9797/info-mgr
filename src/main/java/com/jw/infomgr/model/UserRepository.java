@@ -19,7 +19,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     void updateAuthorityById(String Authority, int id);
 
     @Query(value = "SELECT * FROM user WHERE id = ?1", nativeQuery = true)
-    User getFullOne(int id);
+    User getFullOneById(int id);
 
     @Query(value = "SELECT u FROM User u")
     List<User> findAllUsers();

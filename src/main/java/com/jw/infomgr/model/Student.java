@@ -14,8 +14,8 @@ public class Student extends User {
 //    private String address;
     private String department;  // 学院
     private String major;       // 专业
-    private int grade;          // 年级
-    private int classNum;       // 班级
+    private Integer grade;          // 年级
+    private Integer classNum;       // 班级
 
     public Student() {
     }

@@ -42,7 +42,7 @@ public class UserApi {
     @LoginRequired
     @GetMapping("/info")
     public Object findById(@CurrentUser User currentUser) {
-        return userRepository.getFullOne(currentUser.getId());
+        return userRepository.getFullOneById(currentUser.getId());
     }
 
     @LoginRequired

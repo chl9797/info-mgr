@@ -2,7 +2,6 @@ package com.jw.infomgr.api;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.fasterxml.jackson.annotation.JsonAlias;
 import com.jw.infomgr.annotation.AdminRequired;
 import com.jw.infomgr.annotation.CurrentUser;
 import com.jw.infomgr.model.*;
@@ -11,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 
 
@@ -44,7 +42,7 @@ public class AdminApi {
     @GetMapping("/info/{id}")
     public Object findById(@PathVariable int id) {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("user", userRepository.getFullOne(id));
+        jsonObject.put("user", userRepository.getFullOneById(id));
         jsonObject.put("authority", userRepository.findAuthorityById(id));
         return jsonObject;
     }
@@ -52,7 +50,7 @@ public class AdminApi {
     @AdminRequired
     @PostMapping("/update/{id}")
     public Object userInfo(@RequestBody JSONObject request, @PathVariable int id) {
-        User userInDB = userRepository.getFullOne(id);
+        User userInDB = userRepository.getFullOneById(id);
         return userService.update(userInDB, request);
     }
 
