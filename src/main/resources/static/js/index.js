@@ -245,6 +245,7 @@ var User = {
                 if (res.data.error) {
                     handleError(res.data.error)
                 } else {
+                    this.$router.go(0)
                     emitInfo('更新头像成功')
                 }
             }.bind(this))
@@ -275,9 +276,6 @@ var Admin = {
             }
         }.bind(this))
     },
-    // computed: {
-    //     image: () => JSON.parse(sessionStorage.getItem('currentUser')).id + '.jpg'
-    // },
     beforeRouteEnter: function (to, from, next) {
         if (sessionStorage.getItem('token') === null) {
             next({
