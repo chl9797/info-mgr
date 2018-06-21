@@ -114,63 +114,78 @@
   </script>
 
   <script id="admin" type="text/x-template">
-    <table class="table has-text-centered">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>姓名</th>
-          <th>性别</th>
-          <th>年龄</th>
-          <th>学号</th>
-          <th>权限</th>
-          <th>查看详情</th>
-          <th>删除</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(infoOne, index) in infoAll">
-          <th>{{ infoOne.id }}</th>
-          <td>{{ infoOne.name }}</td>
-          <td>{{ infoOne.gender }}</td>
-          <td>{{ infoOne.age }}</td>
-          <td>{{ infoOne.studentID }}</td>
-          <td>{{ authorities[index] }}</td>
-          <td>
-            <router-link style="text-decoration: none" :to="'/admin/info/' + infoOne.id">
-              <button class="button is-info is-outlined">查看/修改</button>
-            </router-link>
-          </td>
-          <td>
-            <router-link style="text-decoration: none" :to="'/admin/delete/' + infoOne.id">
-              <button class="button is-danger is-outlined">删除</button>
-            </router-link>
-          </td>
-        </tr>
-        <tr>
-          <th></th>
-          <th></th>
-          <th></th>
-          <th></th>
-          <th>
-            <div class="field">
-              <div class="file is-centered is-small is-success">
-                <label class="file-label">
-                  <input ref="files" class="file-input" type="file" name="userInfo" v-on:change="upload">
-                  <span class="file-cta">
-                    <span class="file-icon">
-                      <i class="fas fa-upload"></i>
+    <div class="tile is-vertical is-ancestor">
+      <div class="tile is-parent">
+        <div class="tile is-4"></div>
+        <div class="field">
+          <p class="control has-icons-right">
+            <input class="input" placeholder="搜索用户..." v-model="searchText">
+            <span class="icon is-right">
+              <i class="fas fa-search"></i>
+            </span>
+          </p>
+        </div>
+      </div>
+
+      <table class="table has-text-centered">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>姓名</th>
+            <th>性别</th>
+            <th>年龄</th>
+            <th>学号</th>
+            <th>权限</th>
+            <th>查看详情</th>
+            <th>删除</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="infoOne in filteredInfoAll">
+            <th>{{ infoOne.id }}</th>
+            <td>{{ infoOne.name }}</td>
+            <td>{{ infoOne.gender }}</td>
+            <td>{{ infoOne.age }}</td>
+            <td>{{ infoOne.studentID }}</td>
+            <td>{{ infoOne.authority }}</td>
+            <!-- <td>{{ authorities[index] }}</td> -->
+            <td>
+              <router-link style="text-decoration: none" :to="'/admin/info/' + infoOne.id">
+                <button class="button is-info is-outlined">查看/修改</button>
+              </router-link>
+            </td>
+            <td>
+              <router-link style="text-decoration: none" :to="'/admin/delete/' + infoOne.id">
+                <button class="button is-danger is-outlined">删除</button>
+              </router-link>
+            </td>
+          </tr>
+          <tr>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th>
+              <div class="field">
+                <div class="file is-centered is-small is-success">
+                  <label class="file-label">
+                    <input ref="files" class="file-input" type="file" name="userInfo" v-on:change="upload">
+                    <span class="file-cta">
+                      <span class="file-icon">
+                        <i class="fas fa-upload"></i>
+                      </span>
+                      <span class="file-label">
+                        添加用户
+                      </span>
                     </span>
-                    <span class="file-label">
-                      添加用户
-                    </span>
-                  </span>
-                </label>
+                  </label>
+                </div>
               </div>
-            </div>
-          </th>
-        </tr>
-      </tbody>
-    </table>
+            </th>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </script>
 
   <script id="admin-delete" type="text/x-template">
