@@ -163,50 +163,51 @@ var LoginForm = {
                             this.$router.push('/user')
                             break
                     }
+                    this.$router.go(0)
                 }
             }.bind(this))
         }
     }
 }
 
-var SignupForm = {
-    template: '#signup-form',
-    data: function () {
-        return {
-            name: '',
-            password: '',
-            passwordAgain: ''
-        }
-    },
-    methods: {
-        handleSubmit: function (e) {
-            e.preventDefault()
-            if (this.name === '') {
-                handleError('用户名不能为空')
-                return false
-            }
-            if (this.password === '') {
-                handleError('密码不能为空')
-                return false
-            }
-            if (this.password !== this.passwordAgain) {
-                handleError('两次输入的密码不一致')
-                return false
-            }
-            axios.post('/api/user/add', {
-                name: this.name,
-                password: this.password
-            }).then(function (res) {
-                if (res.data.error) {
-                    handleError(res.data.error)
-                } else {
-                    emitInfo('注册成功，请登录')
-                    this.$router.push('/login')
-                }
-            }.bind(this))
-        }
-    }
-}
+// var SignupForm = {
+//     template: '#signup-form',
+//     data: function () {
+//         return {
+//             name: '',
+//             password: '',
+//             passwordAgain: ''
+//         }
+//     },
+//     methods: {
+//         handleSubmit: function (e) {
+//             e.preventDefault()
+//             if (this.name === '') {
+//                 handleError('用户名不能为空')
+//                 return false
+//             }
+//             if (this.password === '') {
+//                 handleError('密码不能为空')
+//                 return false
+//             }
+//             if (this.password !== this.passwordAgain) {
+//                 handleError('两次输入的密码不一致')
+//                 return false
+//             }
+//             axios.post('/api/user/add', {
+//                 name: this.name,
+//                 password: this.password
+//             }).then(function (res) {
+//                 if (res.data.error) {
+//                     handleError(res.data.error)
+//                 } else {
+//                     emitInfo('注册成功，请登录')
+//                     this.$router.push('/login')
+//                 }
+//             }.bind(this))
+//         }
+//     }
+// }
 
 var User = {
     template: '#user',
@@ -540,10 +541,10 @@ var routes = [{
         path: '/login', // 登录页面
         component: LoginForm
     },
-    {
-        path: '/signup', // 注册
-        component: SignupForm
-    },
+    // {
+    //     path: '/signup', // 注册
+    //     component: SignupForm
+    // },
     {
         path: '/user', // 学生和老师主页
         component: User

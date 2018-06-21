@@ -24,7 +24,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query(value = "SELECT u FROM User u")
     List<User> findAllUsers();
 
-    @Query(value = "SELECT Authority FROM User", nativeQuery = true)
+    @Query(value = "SELECT Authority FROM user", nativeQuery = true)
     List<String> findAllAuthorities();
 
     User deleteById(int id);

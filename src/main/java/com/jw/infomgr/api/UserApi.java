@@ -29,15 +29,15 @@ public class UserApi {
         this.uploadConfig = uploadConfig;
     }
 
-    @PostMapping("/add")
-    public Object add(@RequestBody User user) {
-        if (userRepository.findByName(user.getName()) != null) {
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("error", "用户名已被使用");
-            return jsonObject;
-        }
-        return userService.add(user);
-    }
+//    @PostMapping("/add")
+//    public Object add(@RequestBody User user) {
+//        if (userRepository.findByName(user.getName()) != null) {
+//            JSONObject jsonObject = new JSONObject();
+//            jsonObject.put("error", "用户名已被使用");
+//            return jsonObject;
+//        }
+//        return userService.add(user);
+//    }
 
     @LoginRequired
     @GetMapping("/info")
