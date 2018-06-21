@@ -21,4 +21,4 @@ logging:
               BasicBinder: TRACE
 debug: true
 kira:
-  uploadPath: /Users/kira/Desktop/软工/info-mgr/upload/
+  uploadPath: /tmp/upload/

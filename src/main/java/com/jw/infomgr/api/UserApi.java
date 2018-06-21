@@ -60,7 +60,13 @@ public class UserApi {
             jsonObject.put("error", "文件不能为空");
             return jsonObject;
         }
-        File dest = new File(uploadConfig.getUploadPath() + currentUser.getId() + ".jpg");
+        String uploadPath = uploadConfig.getUploadPath();
+        File uploadDir = new File(uploadPath);
+        // 如果文件夹不存在则创建
+        if (!uploadDir.exists() && !uploadDir.isDirectory()) {
+            uploadDir.mkdir();
+        }
+        File dest = new File(uploadPath + currentUser.getId() + ".jpg");
         try {
             file.transferTo(dest);
             jsonObject.put("message", "success");
