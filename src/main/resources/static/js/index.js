@@ -258,7 +258,6 @@ var Admin = {
     data: function () {
         return {
             infoAll: [],
-            authorities: [],
             searchText: '',
         }
     },
@@ -305,23 +304,6 @@ var Admin = {
             next()
         }
     },
-    // filters: {
-    //     conditions: function (items) {
-    //         var searchRegex = new RegExp(this.searchText, 'i');
-    //         var arr = [];
-    //         for (var i = 0, j = items.length; i < j; i++) {
-    //             arr[i] = {};
-    //             arr[i].contacters = [];
-    //             for (var item = 0, len = items[i].contacters.length; item < len; item++) {
-    //                 if (searchRegex.test(items[i].contacters[item].name) || searchRegex.test(items[i].contacters[item].enterpriseName) || searchRegex.test(items[i].contacters[item].phoneNumber) || searchRegex.test(items[i].contacters[item].uniqueID)) {
-    //                     arr[i].firstLetter = items[i].firstLetter;
-    //                     arr[i].contacters.push(items[i].contacters[item]);
-    //                 }
-    //             }
-    //         }
-    //         return arr;
-    //     }
-    // },
     methods: {
         upload: function (e) {
             e.preventDefault()
